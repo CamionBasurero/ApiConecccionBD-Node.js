@@ -1,5 +1,4 @@
 
-
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -47,6 +46,31 @@ app.get('/data', async (req, res) => {
     }
 });
 
+// Nueva ruta para consultar el valor desde la base de datos
+app.get('/RecetaSeleccionada', async (req, res) => {
+    try {
+        const pool = await conectarDB();  // Conectar a la base de datos
+        
+        if (pool) {
+            const result = await pool.request()
+                .query("SELECT * FROM Recetas WHERE Receta_Seleccionada = 'true'");
+
+            if (result.recordset.length > 0) {
+                const Receta_Seleccionada = result.recordset[0].Receta_Seleccionada;
+                console.log(`Valor consultado: ${Receta_Seleccionada}`);
+                
+                // Devolver el valor booleano en la respuesta
+                res.status(200).json({ Receta_Seleccionada });
+            } else {
+                res.status(404).json({ message: 'No se encontró ninguna receta seleccionada' });
+            }
+        }
+    } catch (error) {
+        console.error('Error al consultar la base de datos:', error);
+        res.status(500).send('Error al consultar la base de datos');
+    }
+});
+
 // Middleware para registrar solicitudes
 app.use((req, res, next) => {
     console.log(`Recibiendo solicitud para: ${req.url}`);
@@ -54,7 +78,7 @@ app.use((req, res, next) => {
 });
 
 // Iniciar el servidor en el puerto 3000
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`API corriendo en el puerto ${PORT}`);
 });
