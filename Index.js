@@ -72,10 +72,10 @@ app.get('/RecetaSeleccionada', async (req, res) => {
                 const TemperaturaCoccion = receta.Temperatura_De_Coccion;
 
                 //Tiempos
-                const TiempoMacerado = parseInt(receta.Tiempo_de_macerado);  // Convertir a int
-                const TiempoCoccion = parseInt(receta.Tiempo_de_Coccion);    // Convertir a int
-                const TiempoClarificado = parseInt(receta.Tiempo_de_clarificado);  // Convertir a int
-                const TiempoWhirlpool = parseInt(receta.TiempoWhirlpool);  // Convertir a int
+                const TiempoMacerado = receta.Tiempo_de_macerado;
+                const TiempoCoccion = receta.Tiempo_de_Coccion;
+                const TiempoClarificado = receta.Tiempo_de_clarificado;
+                const TiempoWhirlpool = receta.TiempoWhirlpool;
 
                 //Otras variables
                 const CantLitros = receta.Litros;
