@@ -86,11 +86,28 @@ app.get('/RecetaSeleccionada', async (req, res) => {
                 console.log(`Tiempos: ${TiempoMacerado,TiempoCoccion,TiempoClarificado,TiempoWhirlpool}`);
                 console.log(`Otras variables: ${CantLitros}`);
                 
-                // Devolver el estado, nombre de la receta y los ingredientes en la respuesta
+                // Devolver el estado, nombre de la receta, ingredientes, temperaturas, tiempos y litros en la respuesta
                 res.status(200).json({
                     Receta_Seleccionada,
-                    Nombre_Receta
-                    
+                    Nombre_Receta,
+                    Ingredientes: {
+                        TipoDeMalta,
+                        TipoDeLupulo,
+                        CantidadMalta,
+                        CantidadLupulo
+                    },
+                    Temperaturas: {
+                        TemperaturaHervido,
+                        TemperaturaMacerado,
+                        TemperaturaCoccion
+                    },
+                    Tiempos: {
+                        TiempoMacerado,
+                        TiempoCoccion,
+                        TiempoClarificado,
+                        TiempoWhirlpool
+                    },
+                    CantLitros
                 });
             } else {
                 res.status(404).json({ message: 'Esperando a que comience el proceso....' });
