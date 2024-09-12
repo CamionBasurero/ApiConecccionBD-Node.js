@@ -59,9 +59,32 @@ app.get('/RecetaSeleccionada', async (req, res) => {
                 const receta = result.recordset[0];  // Obtener la primera receta seleccionada
                 const Receta_Seleccionada = receta.Receta_Seleccionada;
                 const Nombre_Receta = receta.Nombre_De_Receta;
-                //const Ingredientes = receta.Ingredientes;
+
+                //Ingredientes
+                const TipoDeMalta = receta.Malta;
+                const TipoDeLupulo = receta.Lupulo;
+                const CantidadMalta = receta.Cant_De_Malta;
+                const CantidadLupulo = receta.Cant_De_Lupulo;
+                
+                //Temperaturas
+                const TemperaturaHervido = receta.Temperatura_de_hervido;
+                const TemperaturaMacerado = receta.Temperatura_Macerado;
+                const TemperaturaCoccion = receta.Temperatura_De_Coccion;
+
+                //Tiempos
+                const TiempoMacerado = receta.Tiempo_de_macerado;
+                const TiempoCoccion = receta.Tiempo_de_Coccion;
+                const TiempoClarificado = receta.Tiempo_de_clarificado;
+                const TiempoWhirlpool = receta.TiempoWhirlpool;
+
+                //Otras variables
+                const CantLitros = receta.Litros;
 
                 console.log(`Receta seleccionada: ${Nombre_Receta}`);
+                console.log(`Ingredientes: ${TipoDeLupulo,TipoDeMalta,CantidadMalta,CantidadLupulo}`);
+                console.log(`Temperaturas: ${TemperaturaHervido,TemperaturaMacerado,TemperaturaCoccion}`);
+                console.log(`Tiempos: ${TiempoMacerado,TiempoCoccion,TiempoClarificado,TiempoWhirlpool}`);
+                console.log(`Otras variables: ${CantLitros}`);
                 
                 // Devolver el estado, nombre de la receta y los ingredientes en la respuesta
                 res.status(200).json({
