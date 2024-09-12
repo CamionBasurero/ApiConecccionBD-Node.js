@@ -56,13 +56,21 @@ app.get('/RecetaSeleccionada', async (req, res) => {
                 .query("SELECT * FROM Recetas WHERE Receta_Seleccionada = 'true'");
 
             if (result.recordset.length > 0) {
-                const Receta_Seleccionada = result.recordset[0].Receta_Seleccionada;
-                console.log(`Valor consultado: ${Receta_Seleccionada}`);
+                const receta = result.recordset[0];  // Obtener la primera receta seleccionada
+                const Receta_Seleccionada = receta.Receta_Seleccionada;
+                const Nombre_Receta = receta.Nombre_De_Receta;
+                //const Ingredientes = receta.Ingredientes;
+
+                console.log(`Receta seleccionada: ${Nombre_Receta}`);
                 
-                // Devolver el valor booleano en la respuesta
-                res.status(200).json({ Receta_Seleccionada });
+                // Devolver el estado, nombre de la receta y los ingredientes en la respuesta
+                res.status(200).json({
+                    Receta_Seleccionada,
+                    Nombre_Receta
+                    
+                });
             } else {
-                res.status(404).json({ message: 'No se encontró ninguna receta seleccionada' });
+                res.status(404).json({ message: 'Esperando a que comience el proceso....' });
             }
         }
     } catch (error) {
