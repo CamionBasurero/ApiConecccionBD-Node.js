@@ -68,9 +68,10 @@ app.get('/RecetaSeleccionada', async (req, res) => {
                 //Temperaturas
                 const TemperaturaHervido = receta.Temperatura_de_hervido;
                 const TemperaturaMacerado = receta.Temperatura_Macerado;
-
-                const TiempoMacerado = parseFloat(receta.Tiempo_de_macerado);  
-                const TiempoClarificado = parseInt(receta.Tiempo_de_clarificado); 
+                
+                //Tiempos
+                const TiempoMacerado = receta.Tiempo_de_macerado;  
+                const TiempoClarificado = receta.Tiempo_de_clarificado; 
                 
                 //Otras variables
                 const CantLitros = receta.Litros;
@@ -85,23 +86,17 @@ app.get('/RecetaSeleccionada', async (req, res) => {
                 res.status(200).json({
                     Receta_Seleccionada,
                     Nombre_Receta,
-                    Ingredientes: {
+                    Ingredientes: 
+                    {
                         TipoDeMalta,
-                        
-                        CantidadMalta,
-                        
+                        CantidadMalta, 
                     },
                     
                         TemperaturaHervido,
                         TemperaturaMacerado,
-                        
-                    
-                    Tiempos: {
                         TiempoMacerado,
                         TiempoClarificado,
-                        
-                    },
-                    CantLitros
+                        CantLitros
                 });
             } else {
                 res.status(404).json({ message: 'Esperando a que comience el proceso....' });
