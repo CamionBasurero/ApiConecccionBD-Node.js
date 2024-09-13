@@ -57,32 +57,28 @@ app.get('/RecetaSeleccionada', async (req, res) => {
 
             if (result.recordset.length > 0) {
                 const receta = result.recordset[0];  // Obtener la primera receta seleccionada
+                
                 const Receta_Seleccionada = receta.Receta_Seleccionada;
                 const Nombre_Receta = receta.Nombre_De_Receta;
 
                 //Ingredientes
                 const TipoDeMalta = receta.Malta;
-                const TipoDeLupulo = receta.Lupulo;
                 const CantidadMalta = receta.Cant_De_Malta;
-                const CantidadLupulo = receta.Cant_De_Lupulo;
                 
                 //Temperaturas
                 const TemperaturaHervido = receta.Temperatura_de_hervido;
                 const TemperaturaMacerado = receta.Temperatura_Macerado;
-                const TemperaturaCoccion = receta.Temperatura_De_Coccion;
 
-                const TiempoMacerado = parseFloat(receta.Tiempo_de_macerado);  // Convertir a int
-                const TiempoCoccion = parseInt(receta.Tiempo_de_Coccion);    // Convertir a int
-                const TiempoClarificado = parseInt(receta.Tiempo_de_clarificado);  // Convertir a int
-                const TiempoWhirlpool = parseInt(receta.Whirlpool);  // Convertir a int
-
+                const TiempoMacerado = parseFloat(receta.Tiempo_de_macerado);  
+                const TiempoClarificado = parseInt(receta.Tiempo_de_clarificado); 
+                
                 //Otras variables
                 const CantLitros = receta.Litros;
 
                 console.log(`Receta seleccionada: ${Nombre_Receta}`);
-                console.log(`Ingredientes: ${TipoDeLupulo,TipoDeMalta,CantidadMalta,CantidadLupulo}`);
-                console.log(`Temperaturas: ${TemperaturaHervido,TemperaturaMacerado,TemperaturaCoccion}`);
-                console.log(`Tiempos: ${TiempoMacerado,TiempoCoccion,TiempoClarificado,TiempoWhirlpool}`);
+                console.log(`Ingredientes: ${TipoDeMalta,CantidadMalta}`);
+                console.log(`Temperaturas: ${TemperaturaHervido,TemperaturaMacerado}`);
+                console.log(`Tiempos: ${TiempoMacerado,TiempoClarificado}`);
                 console.log(`Otras variables: ${CantLitros}`);
                 
                 // Devolver el estado, nombre de la receta, ingredientes, temperaturas, tiempos y litros en la respuesta
@@ -91,20 +87,19 @@ app.get('/RecetaSeleccionada', async (req, res) => {
                     Nombre_Receta,
                     Ingredientes: {
                         TipoDeMalta,
-                        TipoDeLupulo,
+                        
                         CantidadMalta,
-                        CantidadLupulo
+                        
                     },
-                    Temperaturas: {
+                    
                         TemperaturaHervido,
                         TemperaturaMacerado,
-                        TemperaturaCoccion
-                    },
+                        
+                    
                     Tiempos: {
                         TiempoMacerado,
-                        TiempoCoccion,
                         TiempoClarificado,
-                        TiempoWhirlpool
+                        
                     },
                     CantLitros
                 });
