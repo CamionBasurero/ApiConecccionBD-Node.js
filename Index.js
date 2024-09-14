@@ -34,18 +34,6 @@ async function conectarDB() {
     }
 }
 
-// Endpoint para obtener datos
-app.get('/data', async (req, res) => {
-    try {
-        const pool = await conectarDB();
-        const result = await pool.request().query('SELECT Nom_Usuario FROM Usuarios');
-        res.json(result.recordset);
-    } catch (err) {
-        console.error('Error al obtener datos:', err);
-        res.status(500).send(err.message);
-    }
-});
-
 // Nueva ruta para consultar el valor desde la base de datos
 app.get('/RecetaSeleccionada', async (req, res) => {
     try {
@@ -105,6 +93,27 @@ app.get('/RecetaSeleccionada', async (req, res) => {
     } catch (error) {
         console.error('Error al consultar la base de datos:', error);
         res.status(500).send('Error al consultar la base de datos');
+    }
+});
+
+// Nueva ruta para recibir el volumen acumulado del sensor
+app.post('/Litros', async (req, res) => {
+    const { volumen } = req.body;  // Obtener el volumen del cuerpo de la solicitud
+
+    try {
+        const pool = await conectarDB();  // Conectar a la base de datos
+        
+        if (pool) {
+            // Inserta el valor del volumen en la base de datos
+            const result = await pool.request()
+                .input('Volumen', sql.Float, volumen)
+                .query("INSERT INTO Recetas (Litros_Llenado) VALUES (@Volumen, GETDATE())");
+
+            res.status(200).json({ message: 'Volumen registrado con éxito' });
+        }
+    } catch (error) {
+        console.error('Error al registrar el volumen:', error);
+        res.status(500).send('Error al registrar el volumen');
     }
 });
 
