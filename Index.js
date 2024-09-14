@@ -107,7 +107,7 @@ app.post('/Litros', async (req, res) => {
             // Actualiza el volumen para la receta especificada
             const result = await pool.request()
                 .input('Volumen', sql.Float, volumen)
-                .input('NombreReceta', sql.VarChar, nombreReceta)
+                .input('NombreReceta', sql.VarChar, NombreReceta)
                 .query("UPDATE Recetas SET Litros_Llenado = @Volumen WHERE Nombre_De_Receta = @NombreReceta");
 
             // Verificar si se actualizó alguna fila
