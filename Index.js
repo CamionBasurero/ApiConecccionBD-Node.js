@@ -86,7 +86,9 @@ app.get('/RecetaSeleccionada', async (req, res) => {
                         TemperaturaMacerado,
                         TiempoMacerado,
                         TiempoClarificado,
-                        CantLitros
+                        CantLitros,
+                        EstadoHervido,
+                        EstadoMacerado
                 });
             } else {
                 res.status(404).json({ message: 'Esperando a que comience el proceso....' });
