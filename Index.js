@@ -63,6 +63,8 @@ app.get('/RecetaSeleccionada', async (req, res) => {
                 
                 //Otras variables
                 const CantLitros = receta.Litros;
+                const EstadoHervido = receta.Estado_Hervido;
+                const EstadoMacerado = receta.Estado_Macerado;
 
                 console.log(`Receta seleccionada: ${Nombre_Receta}`);
                 console.log(`Ingredientes: ${TipoDeMalta,CantidadMalta}`);
