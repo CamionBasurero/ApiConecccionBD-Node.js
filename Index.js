@@ -107,7 +107,7 @@ app.post('/Litros', async (req, res) => {
             // Inserta el valor del volumen en la base de datos
             const result = await pool.request()
                 .input('Volumen', sql.Float, volumen)
-                .query("INSERT INTO Recetas (Litros_Llenado) VALUES (@Volumen");
+                .query("INSERT INTO Recetas (Litros_Llenado) VALUES (@Volumen)");
 
             res.status(200).json({ message: 'Volumen registrado con éxito' });
         }
