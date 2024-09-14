@@ -70,7 +70,7 @@ app.get('/RecetaSeleccionada', async (req, res) => {
                 console.log(`Ingredientes: ${TipoDeMalta,CantidadMalta}`);
                 console.log(`Temperaturas: ${TemperaturaHervido,TemperaturaMacerado}`);
                 console.log(`Tiempos: ${TiempoMacerado,TiempoClarificado}`);
-                console.log(`Otras variables: ${CantLitros}`);
+                console.log(`Otras variables: ${CantLitros,EstadoHervido,EstadoMacerado}`);
                 
                 // Devolver el estado, nombre de la receta, ingredientes, temperaturas, tiempos y litros en la respuesta
                 res.status(200).json({
