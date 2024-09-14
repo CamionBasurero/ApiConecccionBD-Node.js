@@ -98,22 +98,28 @@ app.get('/RecetaSeleccionada', async (req, res) => {
 
 // Nueva ruta para recibir el volumen acumulado del sensor
 app.post('/Litros', async (req, res) => {
-    const { volumen } = req.body;  // Obtener el volumen del cuerpo de la solicitud
+    const { volumen, NombreReceta } = req.body;  // Obtener el volumen y el nombre de la receta del cuerpo de la solicitud
 
     try {
         const pool = await conectarDB();  // Conectar a la base de datos
         
         if (pool) {
-            // Inserta el valor del volumen en la base de datos
+            // Actualiza el volumen para la receta especificada
             const result = await pool.request()
                 .input('Volumen', sql.Float, volumen)
-                .query("INSERT INTO Recetas (Litros_Llenado) VALUES (@Volumen)");
+                .input('NombreReceta', sql.VarChar, nombreReceta)
+                .query("UPDATE Recetas SET Litros_Llenado = @Volumen WHERE Nombre_De_Receta = @NombreReceta");
 
-            res.status(200).json({ message: 'Volumen registrado con éxito' });
+            // Verificar si se actualizó alguna fila
+            if (result.rowsAffected[0] > 0) {
+                res.status(200).json({ message: 'Volumen actualizado con éxito' });
+            } else {
+                res.status(404).json({ message: 'No se encontró la receta especificada' });
+            }
         }
     } catch (error) {
-        console.error('Error al registrar el volumen:', error);
-        res.status(500).send('Error al registrar el volumen');
+        console.error('Error al actualizar el volumen:', error);
+        res.status(500).send('Error al actualizar el volumen');
     }
 });
 
