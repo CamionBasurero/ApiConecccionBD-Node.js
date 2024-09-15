@@ -101,8 +101,34 @@ app.get('/RecetaSeleccionada', async (req, res) => {
 });
 
 app.post('/ActualizarReceta', async (req, res) => {
-    (Nombre_Receta, Volumen_Cargado, Temperatura_HervidoReal, Temperatura_MaceradoReal, Tiempo_Clarificado, Tiempo_Macerado) = req.body;  // Obtener el nombre de la receta y cualquier variable disponible
+    const {Nombre_Receta, Volumen_Cargado, Temperatura_HervidoReal, Temperatura_MaceradoReal, Tiempo_Clarificado, Tiempo_Macerado} = req.body;  // Obtener el nombre de la receta y cualquier variable disponible
+    try {
+        const pool = await conectarDB();  // Conectar a la base de datos
+        
+        if (pool) {
+            // Definir la consulta para actualizar solo los litros
+            let query = "UPDATE Recetas SET Litros_Llenado = @Volumen WHERE Nombre_De_Receta = @NombreReceta";
+    
+            // Preparar la solicitud
+            const request = pool.request()
+                .input('Volumen', sql.Float, Volumen_Cargado)  // Volumen a actualizar
+                .input('NombreReceta', sql.VarChar, Nombre_Receta);  // Nombre de la receta para la condición WHERE
+    
+            // Ejecutar la consulta
+            const result = await request.query(query);
+    
+            if (result.rowsAffected[0] > 0) {
+                res.status(200).json({ message: 'Litros actualizados con éxito' });
+            } else {
+                res.status(404).json({ message: 'No se encontró la receta especificada' });
+            }
+        }
+    } catch (error) {
+        console.error('Error al actualizar los litros:', error);
+        res.status(500).send('Error al actualizar los litros');
+    }
 
+    /*
     try {
         const pool = await conectarDB();  // Conectar a la base de datos
         
@@ -115,7 +141,7 @@ app.post('/ActualizarReceta', async (req, res) => {
                 params.push({ name: 'Volumen', value: Volumen_Cargado, type: sql.Float });
             }
            
-            /*
+            
             if (Temperatura_HervidoReal !== undefined) {
                 query += "Temp_Hervido_Real = @TemperaturaHervido, ";
                 params.push({ name: 'TemperaturaHervido', value: Temperatura_HervidoReal, type: sql.Float });
@@ -135,7 +161,7 @@ app.post('/ActualizarReceta', async (req, res) => {
                 query += "Tiempo_Macerado_Transcurrido = @TiempoMacerado, ";
                 params.push({ name: 'TiempoMacerado', value: Tiempo_Macerado, type: sql.Int });
             }
-            */
+            
 
             // Eliminar la última coma y añadir la condición WHERE
             query = query.slice(0, -2) + " WHERE Nombre_De_Receta = @NombreReceta";
@@ -162,6 +188,7 @@ app.post('/ActualizarReceta', async (req, res) => {
         console.error('Error al actualizar la receta:', error);
         res.status(500).send('Error al actualizar la receta');
     }
+    */
 });
 
 // Middleware para registrar solicitudes
