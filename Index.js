@@ -112,7 +112,7 @@ app.post('/Litros', async (req, res) => {
             const result = await pool.request()
                 .input('Volumen', sql.Float, volumen)
                 .input('NombreReceta', sql.VarChar, nombreReceta)
-                .query("UPDATE Recetas SET volumen = @Volumen WHERE Nombre_De_Receta = @NombreReceta");
+                .query("UPDATE Recetas SET Litros_Llenado = @Volumen WHERE Nombre_De_Receta = @NombreReceta");
 
             // Verificar si se actualizó alguna fila
             if (result.rowsAffected[0] > 0) {
