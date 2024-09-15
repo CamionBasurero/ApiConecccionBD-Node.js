@@ -101,7 +101,7 @@ app.get('/RecetaSeleccionada', async (req, res) => {
 });
 
 app.post('/ActualizarReceta', async (req, res) => {
-    const {Nombre_Receta, Volumen_Cargado, Temperatura_HervidoReal, Temperatura_MaceradoReal, Tiempo_Clarificado, Tiempo_Macerado} = req.body;  // Obtener el nombre de la receta y cualquier variable disponible
+    const {Volumen_Cargado,Nombre_Receta, Temperatura_HervidoReal, Temperatura_MaceradoReal, Tiempo_Clarificado, Tiempo_Macerado} = req.body;  // Obtener el nombre de la receta y cualquier variable disponible
     try {
         const pool = await conectarDB();  // Conectar a la base de datos
         
