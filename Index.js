@@ -100,16 +100,18 @@ app.get('/RecetaSeleccionada', async (req, res) => {
     }
 });
 
-app.post('/ActualizarReceta', async (req, res) => {
-    const {Volumen_Cargado,Nombre_Receta, Temperatura_HervidoReal, Temperatura_MaceradoReal, Tiempo_Clarificado, Tiempo_Macerado} = req.body;  // Obtener el nombre de la receta y cualquier variable disponible
+// Nueva ruta para recibir el volumen acumulado del sensor
+app.post('/Litros', async (req, res) => {
+    const { volumen, nombreReceta } = req.body;  // Obtener el volumen y el nombre de la receta del cuerpo de la solicitud
+
     try {
         const pool = await conectarDB();  // Conectar a la base de datos
         
         if (pool) {
             // Actualiza el volumen para la receta especificada
             const result = await pool.request()
-                .input('Volumen', sql.Float, Volumen_Cargado)
-                .input('NombreReceta', sql.VarChar, Nombre_Receta)
+                .input('Volumen', sql.Float, volumen)
+                .input('NombreReceta', sql.VarChar, nombreReceta)
                 .query("UPDATE Recetas SET Litros_Llenado = @Volumen WHERE Nombre_De_Receta = @NombreReceta");
 
             // Verificar si se actualizó alguna fila
@@ -120,8 +122,8 @@ app.post('/ActualizarReceta', async (req, res) => {
             }
         }
     } catch (error) {
-        console.error('Error al actualizar los litros:', error);
-        res.status(500).send('Error al actualizar los litros');
+        console.error('Error al actualizar el volumen:', error);
+        res.status(500).send('Error al actualizar el volumen');
     }
 
     /*
