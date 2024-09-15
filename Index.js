@@ -100,10 +100,12 @@ app.get('/RecetaSeleccionada', async (req, res) => {
     }
 });
 
-// Nueva ruta para recibir el volumen acumulado del sensor
 app.post('/Litros', async (req, res) => {
     const { volumen, nombreReceta } = req.body;  // Obtener el volumen y el nombre de la receta del cuerpo de la solicitud
-
+    
+    // Agregar un log para ver si la API recibe los datos correctamente
+    console.log(`Volumen recibido: ${volumen}, NombreReceta recibido: ${nombreReceta}`);
+    
     try {
         const pool = await conectarDB();  // Conectar a la base de datos
         
@@ -125,8 +127,23 @@ app.post('/Litros', async (req, res) => {
         console.error('Error al actualizar el volumen:', error);
         res.status(500).send('Error al actualizar el volumen');
     }
+});
 
-    /*
+// Middleware para registrar solicitudes
+app.use((req, res, next) => {
+    console.log(`Recibiendo solicitud para: ${req.url}`);
+    next();
+});
+
+// Iniciar el servidor en el puerto 3000
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`API corriendo en el puerto ${PORT}`);
+});
+
+
+
+/*
     try {
         const pool = await conectarDB();  // Conectar a la base de datos
         
@@ -187,16 +204,3 @@ app.post('/Litros', async (req, res) => {
         res.status(500).send('Error al actualizar la receta');
     }
     */
-});
-
-// Middleware para registrar solicitudes
-app.use((req, res, next) => {
-    console.log(`Recibiendo solicitud para: ${req.url}`);
-    next();
-});
-
-// Iniciar el servidor en el puerto 3000
-const PORT = process.env.PORT || 10000;
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`API corriendo en el puerto ${PORT}`);
-});
