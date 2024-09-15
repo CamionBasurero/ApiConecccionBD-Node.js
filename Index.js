@@ -101,7 +101,7 @@ app.get('/RecetaSeleccionada', async (req, res) => {
 });
 
 app.post('/ActualizarReceta', async (req, res) => {
-    const { NombreReceta, Volumen, Temperatura, TiempoRecirculado,TiempoMacerado } = req.body;  // Obtener el nombre de la receta y cualquier variable disponible
+    const { Nombre_Receta, Volumen_Cargado, Temperatura_HervidoReal, Temperatura_MaceradoReal, Tiempo_Clarificado, Tiempo_Macerado } = req.body;  // Obtener el nombre de la receta y cualquier variable disponible
 
     try {
         const pool = await conectarDB();  // Conectar a la base de datos
@@ -110,19 +110,29 @@ app.post('/ActualizarReceta', async (req, res) => {
             let query = "UPDATE Recetas SET ";
             let params = [];
             
-            if (Volumen !== undefined) {
+            if (Volumen_Cargado !== undefined) {
                 query += "Litros_Llenado = @Volumen, ";
-                params.push({ name: 'Volumen', value: Volumen, type: sql.Float });
+                params.push({ name: 'Volumen', value: Volumen_Cargado, type: sql.Float });
             }
             
-            if (TemperaturaObjetivo !== undefined) {
-                query += "Temperatura_Objetivo = @TemperaturaObjetivo, ";
-                params.push({ name: 'TemperaturaObjetivo', value: TemperaturaObjetivo, type: sql.Float });
+            if (Temperatura_HervidoReal !== undefined) {
+                query += "Temp_Hervido_Real = @TemperaturaHervido, ";
+                params.push({ name: 'TemperaturaHervido', value: Temperatura_HervidoReal, type: sql.Float });
+            }
+
+            if (Temperatura_MaceradoReal !== undefined) {
+                query += "Temp_Macerado_Real = @TemperaturaMacerado, ";
+                params.push({ name: 'TemperaturaMacerado', value: Temperatura_MaceradoReal, type: sql.Float });
             }
             
-            if (TiempoCoccion !== undefined) {
-                query += "Tiempo_Coccion = @TiempoCoccion, ";
-                params.push({ name: 'TiempoCoccion', value: TiempoCoccion, type: sql.Int });
+            if (Tiempo_Clarificado !== undefined) {
+                query += "Tiempo_Recirculado_Transcurrido = @TiempoClarificado, ";
+                params.push({ name: 'TiempoClarificado', value: Tiempo_Clarificado, type: sql.Int });
+            }
+
+            if (Tiempo_Macerado !== undefined) {
+                query += "Tiempo_Macerado_Transcurrido = @TiempoMacerado, ";
+                params.push({ name: 'TiempoMacerado', value: Tiempo_Macerado, type: sql.Int });
             }
 
             // Eliminar la última coma y añadir la condición WHERE
@@ -130,7 +140,7 @@ app.post('/ActualizarReceta', async (req, res) => {
 
             // Preparar la consulta
             const request = pool.request()
-                .input('NombreReceta', sql.VarChar, NombreReceta);
+                .input('NombreReceta', sql.VarChar, Nombre_Receta);
 
             // Agregar los parámetros a la consulta
             params.forEach(param => {
