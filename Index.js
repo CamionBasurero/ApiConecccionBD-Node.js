@@ -101,7 +101,7 @@ app.get('/RecetaSeleccionada', async (req, res) => {
 });
 
 app.post('/ActualizarReceta', async (req, res) => {
-    const { Nombre_Receta, Volumen_Cargado, Temperatura_HervidoReal, Temperatura_MaceradoReal, Tiempo_Clarificado, Tiempo_Macerado } = req.body;  // Obtener el nombre de la receta y cualquier variable disponible
+    (Nombre_Receta, Volumen_Cargado, Temperatura_HervidoReal, Temperatura_MaceradoReal, Tiempo_Clarificado, Tiempo_Macerado) = req.body;  // Obtener el nombre de la receta y cualquier variable disponible
 
     try {
         const pool = await conectarDB();  // Conectar a la base de datos
@@ -114,7 +114,8 @@ app.post('/ActualizarReceta', async (req, res) => {
                 query += "Litros_Llenado = @Volumen, ";
                 params.push({ name: 'Volumen', value: Volumen_Cargado, type: sql.Float });
             }
-            
+           
+            /*
             if (Temperatura_HervidoReal !== undefined) {
                 query += "Temp_Hervido_Real = @TemperaturaHervido, ";
                 params.push({ name: 'TemperaturaHervido', value: Temperatura_HervidoReal, type: sql.Float });
@@ -134,6 +135,7 @@ app.post('/ActualizarReceta', async (req, res) => {
                 query += "Tiempo_Macerado_Transcurrido = @TiempoMacerado, ";
                 params.push({ name: 'TiempoMacerado', value: Tiempo_Macerado, type: sql.Int });
             }
+            */
 
             // Eliminar la última coma y añadir la condición WHERE
             query = query.slice(0, -2) + " WHERE Nombre_De_Receta = @NombreReceta";
