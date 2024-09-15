@@ -103,7 +103,7 @@ app.get('/RecetaSeleccionada', async (req, res) => {
 // Nueva ruta para recibir el volumen acumulado del sensor
 app.post('/Litros', async (req, res) => {
     //const { volumen, nombreReceta } = req.body;  // Obtener el volumen y el nombre de la receta del cuerpo de la solicitud
-    const volumen = 10.00
+    const volumen = 25.00
     const nombreReceta='DOBLE AMBER ALE'
     try {
         const pool = await conectarDB();  // Conectar a la base de datos
