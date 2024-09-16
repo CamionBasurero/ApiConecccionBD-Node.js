@@ -100,7 +100,6 @@ app.get('/RecetaSeleccionada', async (req, res) => {
     }
 });
 
-// Ruta para actualizar los valores de la receta
 app.post('/ActualizarReceta', async (req, res) => {
     const { NombreReceta, volumen, temperaturaHervidoReal, temperaturaMaceradoReal, tiempoMaceradoTranscurrido, tiempoClarificadoTranscurrido } = req.body;
 
@@ -112,27 +111,32 @@ app.post('/ActualizarReceta', async (req, res) => {
             let params = [];
 
             // Agregar parámetros dinámicamente si están presentes
-            if (volumen !== undefined) {
+            if (volumen !== undefined && volumen !== null) {
+                console.log(`Recibido volumen: ${volumen}`);
                 query += "Litros_Llenado = @Volumen, ";
                 params.push({ name: 'Volumen', value: volumen, type: sql.Float });
             }
 
-            if (temperaturaHervidoReal !== undefined) {
+            if (temperaturaHervidoReal !== undefined && temperaturaHervidoReal !== null) {
+                console.log(`Recibido temperaturaHervidoReal: ${temperaturaHervidoReal}`);
                 query += "Temp_Hervido_Real = @TemperaturaHervido, ";
                 params.push({ name: 'TemperaturaHervido', value: temperaturaHervidoReal, type: sql.Float });
             }
 
-            if (temperaturaMaceradoReal !== undefined) {
+            if (temperaturaMaceradoReal !== undefined && temperaturaMaceradoReal !== null) {
+                console.log(`Recibido temperaturaMaceradoReal: ${temperaturaMaceradoReal}`);
                 query += "Temp_Macerado_Real = @TemperaturaMacerado, ";
                 params.push({ name: 'TemperaturaMacerado', value: temperaturaMaceradoReal, type: sql.Float });
             }
 
-            if (tiempoMaceradoTranscurrido && tiempoMaceradoTranscurrido !== '00:00:00') {
+            if (tiempoMaceradoTranscurrido !== '00:00:00' && tiempoMaceradoTranscurrido !== null) {
+                console.log(`Recibido tiempoMaceradoTranscurrido: ${tiempoMaceradoTranscurrido}`);
                 query += "Tiempo_Macerado_Transcurrido = @TiempoMacerado, ";
                 params.push({ name: 'TiempoMacerado', value: tiempoMaceradoTranscurrido, type: sql.VarChar });
             }
 
-            if (tiempoClarificadoTranscurrido && tiempoClarificadoTranscurrido !== '00:00:00') {
+            if (tiempoClarificadoTranscurrido !== '00:00:00' && tiempoClarificadoTranscurrido !== null) {
+                console.log(`Recibido tiempoClarificadoTranscurrido: ${tiempoClarificadoTranscurrido}`);
                 query += "Tiempo_Clarificado_Transcurrido = @TiempoClarificado, ";
                 params.push({ name: 'TiempoClarificado', value: tiempoClarificadoTranscurrido, type: sql.VarChar });
             }
