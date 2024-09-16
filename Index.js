@@ -137,7 +137,7 @@ app.post('/ActualizarReceta', async (req, res) => {
 
             if (tiempoClarificadoTranscurrido !== '00:00:00' && tiempoClarificadoTranscurrido !== null) {
                 console.log(`Recibido tiempoClarificadoTranscurrido: ${tiempoClarificadoTranscurrido}`);
-                query += "Tiempo_Clarificado_Transcurrido = @TiempoClarificado, ";
+                query += "Tiempo_Recirculado_Transcurrido = @TiempoClarificado, ";
                 params.push({ name: 'TiempoClarificado', value: tiempoClarificadoTranscurrido, type: sql.VarChar });
             }
 
