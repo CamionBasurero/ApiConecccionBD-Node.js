@@ -35,50 +35,71 @@ async function conectarDB() {
     }
 }
 
+// Nueva ruta para consultar el valor desde la base de datos
 app.get('/RecetaSeleccionada', async (req, res) => {
     try {
         const pool = await conectarDB();  // Conectar a la base de datos
-        const result = await pool.request()
-            .query("SELECT * FROM Recetas WHERE Receta_Seleccionada = 'True'");
+        
+        if (pool) {
+            const result = await pool.request()
+                .query("SELECT * FROM Recetas WHERE Receta_Seleccionada = 'True'");
 
-        if (result.recordset.length > 0) {
-            const receta = result.recordset[0];  // Obtener la primera receta seleccionada
-            
-            const {
-                Receta_Seleccionada,
-                Nombre_De_Receta: Nombre_Receta,
-                Malta: TipoDeMalta,
-                Cant_De_Malta: CantidadMalta,
-                Temperatura_de_hervido: TemperaturaHervido,
-                Temperatura_Macerado: TemperaturaMacerado,
-                Tiempo_de_macerado: TiempoMacerado,
-                Tiempo_de_clarificado: TiempoClarificado,
-                Litros: CantLitros,
-                Estado_Hervido: EstadoHervido,
-                Estado_Macerado: EstadoMacerado
-            } = receta;
+            if (result.recordset.length > 0) {
+                const receta = result.recordset[0];  // Obtener la primera receta seleccionada
+                
+                const Receta_Seleccionada = receta.Receta_Seleccionada;
+                const Nombre_Receta = receta.Nombre_De_Receta;
 
-            res.status(200).json({
-                Receta_Seleccionada,
-                Nombre_Receta,
-                Ingredientes: {
-                    TipoDeMalta,
-                    CantidadMalta
-                },
-                TemperaturaHervido,
-                TemperaturaMacerado,
-                TiempoMacerado,
-                TiempoClarificado,
-                CantLitros,
-                EstadoHervido,
-                EstadoMacerado
-            });
-        } else {
-            res.status(404).json({ message: 'Esperando a que comience el proceso....' });
+                //Ingredientes
+                const TipoDeMalta = receta.Malta;
+                const CantidadMalta = receta.Cant_De_Malta;
+                
+                //Temperaturas
+                const TemperaturaHervido = receta.Temperatura_de_hervido;
+                const TemperaturaMacerado = receta.Temperatura_Macerado;
+                
+                //Tiempos
+                const TiempoMacerado = moment(receta.Tiempo_de_macerado).format('HH:mm:ss');
+                const TiempoClarificado = moment(receta.Tiempo_de_clarificado).format('HH:mm:ss');
+                //const TiempoMacerado = receta.Tiempo_de_macerado;  
+                //const TiempoClarificado = receta.Tiempo_de_clarificado; 
+                
+                //Otras variables
+                const CantLitros = receta.Litros;
+                const EstadoHervido = receta.Estado_Hervido;
+                const EstadoMacerado = receta.Estado_Macerado;
+
+                console.log(`Receta seleccionada: ${Nombre_Receta}`);
+                console.log(`Ingredientes: ${TipoDeMalta,CantidadMalta}`);
+                console.log(`Temperaturas: ${TemperaturaHervido,TemperaturaMacerado}`);
+                console.log(`Tiempos: ${TiempoMacerado,TiempoClarificado}`);
+                console.log(`Otras variables: ${CantLitros,EstadoHervido,EstadoMacerado}`);
+                
+                // Devolver el estado, nombre de la receta, ingredientes, temperaturas, tiempos y litros en la respuesta
+                res.status(200).json({
+                    Receta_Seleccionada,
+                    Nombre_Receta,
+                    Ingredientes: 
+                    {
+                        TipoDeMalta,
+                        CantidadMalta, 
+                    },
+                    
+                        TemperaturaHervido,
+                        TemperaturaMacerado,
+                        TiempoMacerado,
+                        TiempoClarificado,
+                        CantLitros,
+                        EstadoHervido,
+                        EstadoMacerado
+                });
+            } else {
+                res.status(404).json({ message: 'Esperando a que comience el proceso....' });
+            }
         }
     } catch (error) {
         console.error('Error al consultar la base de datos:', error);
-        res.status(500).json({ message: 'Error al consultar la base de datos', error: error.message });
+        res.status(500).send('Error al consultar la base de datos');
     }
 });
 
