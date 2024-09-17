@@ -102,7 +102,7 @@ app.get('/RecetaSeleccionada', async (req, res) => {
 });
 
 app.post('/ActualizarReceta', async (req, res) => {
-    const { NombreReceta, volumen, temperaturaHervidoReal, temperaturaMaceradoReal, tiempoMaceradoTranscurrido, tiempoClarificadoTranscurrido,E_Hervido = null, E_Macerado=null } = req.body;
+    const { NombreReceta, volumen, temperaturaHervidoReal, temperaturaMaceradoReal, tiempoMaceradoTranscurrido, tiempoClarificadoTranscurrido,E_Hornalla = null, E_R_Calefaccion = null,E_Hervido = null, E_Macerado=null } = req.body;
 
     try {
         const pool = await conectarDB();  // Conectar a la base de datos
@@ -140,6 +140,18 @@ app.post('/ActualizarReceta', async (req, res) => {
                 console.log(`Recibido tiempoClarificadoTranscurrido: ${tiempoClarificadoTranscurrido}`);
                 query += "Tiempo_Recirculado_Transcurrido = @TiempoClarificado, ";
                 params.push({ name: 'TiempoClarificado', value: tiempoClarificadoTranscurrido, type: sql.VarChar });
+            }
+            
+            if (E_Hornalla !== undefined && E_Hornalla !== null) {
+                console.log(`Estado hervido: ${E_Hornalla}`);
+                query += "Estado_Calefaccion_Hervido = @E_Hornalla, ";
+                params.push({ name: 'E_Hornalla', value: E_Hornalla ? 1 : 0, type: sql.Bit });  // Convertir bool a bit
+            }
+
+            if (E_R_Calefaccion !== undefined && E_Macerado ) {
+                console.log(`Recibido E_R_Calefaccion: ${E_R_Calefaccion}`);
+                query += "Estado_Calefaccion_Macerado = @E_R_Calefaccion, ";
+                params.push({ name: 'E_R_Calefaccion', value: E_R_Calefaccion ? 1 : 0, type: sql.Bit });
             }
 
             if (E_Hervido !== undefined && E_Hervido !== null) {
