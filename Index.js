@@ -156,7 +156,12 @@ app.post('/ActualizarReceta', async (req, res) => {
             // Ejecutar la consulta
             const result = await request.query(query);
 
-            
+            // Verificar si se actualizó alguna fila
+            if (result.rowsAffected[0] > 0) {
+                res.status(200).json({ message: 'Receta actualizada con éxito' });
+            } else {
+                res.status(404).json({ message: 'No se encontró la receta especificada' });
+            }
         }
     } catch (error) {
         console.error('Error al actualizar la receta:', error);
