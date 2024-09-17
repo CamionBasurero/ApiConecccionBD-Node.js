@@ -148,7 +148,7 @@ app.post('/ActualizarReceta', async (req, res) => {
                 params.push({ name: 'E_Hornalla', value: E_Hornalla ? 1 : 0, type: sql.Bit });  // Convertir bool a bit
             }
 
-            if (E_R_Calefaccion !== undefined && E_Macerado ) {
+            if (E_R_Calefaccion !== undefined && E_R_Calefaccion ) {
                 console.log(`Recibido E_R_Calefaccion: ${E_R_Calefaccion}`);
                 query += "Estado_Calefaccion_Macerado = @E_R_Calefaccion, ";
                 params.push({ name: 'E_R_Calefaccion', value: E_R_Calefaccion ? 1 : 0, type: sql.Bit });
