@@ -152,7 +152,7 @@ app.post('/ActualizarReceta', async (req, res) => {
                 console.log(`Recibido E_Macerado: ${E_Macerado}`);
                 query += "Estado_Macerado = @E_Macerado, ";
                 params.push({ name: 'E_Macerado', value: E_Macerado, type: sql.Bit });
-
+            }
             // Eliminar la última coma y agregar la condición WHERE
             query = query.slice(0, -2) + " WHERE Nombre_De_Receta = @NombreReceta";
             params.push({ name: 'NombreReceta', value: NombreReceta, type: sql.VarChar });
@@ -166,12 +166,7 @@ app.post('/ActualizarReceta', async (req, res) => {
             // Ejecutar la consulta
             const result = await request.query(query);
 
-            // Verificar si se actualizó alguna fila
-            if (result.rowsAffected[0] > 0) {
-                res.status(200).json({ message: 'Receta actualizada con éxito' });
-            } else {
-                res.status(404).json({ message: 'No se encontró la receta especificada' });
-            }
+            
         }
     } catch (error) {
         console.error('Error al actualizar la receta:', error);
