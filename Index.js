@@ -1,36 +1,37 @@
-
 const express = require('express');
+const sql = require('mssql');
 const bodyParser = require('body-parser');
-const cors = require('cors');
-const sql = require('mssql'); // Asegúrate de que estás usando 'mssql'
-
 const app = express();
-app.use(bodyParser.json());
-app.use(cors());
+
+app.use(bodyParser.json()); // Para procesar datos en formato JSON
 
 // Configuración de la base de datos
-const DBConfig = {
+const dbConfig = {
     user: process.env.DB_USER || 'juanpi123_SQLLogin_1',
     password: process.env.DB_PASSWORD || 'b9x48xw44a',
     server: process.env.DB_SERVER || 'DB_PlantaDC.mssql.somee.com', 
     database: process.env.DB_DATABASE || 'DB_PlantaDC',
     options: {
-        encrypt: true,
-        enableArithAbort: true,
-        trustServerCertificate: true,
+        encrypt: true,                // Mantener TLS activo
+        enableArithAbort: true,       // Control de errores
+        trustServerCertificate: true  // Permitir certificados autofirmados
+        
     },
     port: 1433,
 };
 
 // Función para conectar a la base de datos
 async function conectarDB() {
+    
     try {
-        const pool = await sql.connect(DBConfig);
+        const pool = await sql.connect(dbConfig);
+        
         console.log('Conectado a la base de datos');
+        
         return pool;
     } catch (error) {
         console.error('Error al conectar a la base de datos:', error);
-        throw error;
+        throw error; // Propaga el error para manejo posterior
     }
 }
 
@@ -41,57 +42,16 @@ app.get('/RecetaSeleccionada', async (req, res) => {
         
         if (pool) {
             const result = await pool.request()
-                .query("SELECT * FROM Recetas WHERE Receta_Seleccionada = 'True'");
+                .query("SELECT * FROM Recetas WHERE Receta_Seleccionada = 'true'");
 
             if (result.recordset.length > 0) {
-                const receta = result.recordset[0];  // Obtener la primera receta seleccionada
+                const Receta_Seleccionada = result.recordset[0].Receta_Seleccionada;
+                console.log(`Valor consultado: ${Receta_Seleccionada}`);
                 
-                const Receta_Seleccionada = receta.Receta_Seleccionada;
-                const Nombre_Receta = receta.Nombre_De_Receta;
-
-                //Ingredientes
-                const TipoDeMalta = receta.Malta;
-                const CantidadMalta = receta.Cant_De_Malta;
-                
-                //Temperaturas
-                const TemperaturaHervido = receta.Temperatura_de_hervido;
-                const TemperaturaMacerado = receta.Temperatura_Macerado;
-                
-                //Tiempos
-                const TiempoMacerado = receta.Tiempo_de_macerado;  
-                const TiempoClarificado = receta.Tiempo_de_clarificado; 
-                
-                //Otras variables
-                const CantLitros = receta.Litros;
-                const EstadoHervido = receta.Estado_Hervido;
-                const EstadoMacerado = receta.Estado_Macerado;
-
-                console.log(`Receta seleccionada: ${Nombre_Receta}`);
-                console.log(`Ingredientes: ${TipoDeMalta,CantidadMalta}`);
-                console.log(`Temperaturas: ${TemperaturaHervido,TemperaturaMacerado}`);
-                console.log(`Tiempos: ${TiempoMacerado,TiempoClarificado}`);
-                console.log(`Otras variables: ${CantLitros,EstadoHervido,EstadoMacerado}`);
-                
-                // Devolver el estado, nombre de la receta, ingredientes, temperaturas, tiempos y litros en la respuesta
-                res.status(200).json({
-                    Receta_Seleccionada,
-                    Nombre_Receta,
-                    Ingredientes: 
-                    {
-                        TipoDeMalta,
-                        CantidadMalta, 
-                    },
-                    
-                        TemperaturaHervido,
-                        TemperaturaMacerado,
-                        TiempoMacerado,
-                        TiempoClarificado,
-                        CantLitros,
-                        EstadoHervido,
-                        EstadoMacerado
-                });
+                // Devolver el valor booleano en la respuesta
+                res.status(200).json({ Receta_Seleccionada });
             } else {
-                res.status(404).json({ message: 'Esperando a que comience el proceso....' });
+                res.status(404).json({ message: 'No se encontró ninguna receta seleccionada' });
             }
         }
     } catch (error) {
@@ -100,174 +60,37 @@ app.get('/RecetaSeleccionada', async (req, res) => {
     }
 });
 
-app.post('/ActualizarReceta', async (req, res) => {
-    const { NombreReceta, volumen, temperaturaHervidoReal, temperaturaMaceradoReal, tiempoMaceradoTranscurrido, tiempoClarificadoTranscurrido } = req.body;
 
-    try {
-        const pool = await conectarDB();  // Conectar a la base de datos
-        
-        if (pool) {
-            let query = "UPDATE Recetas SET ";
-            let params = [];
+// Ruta para recibir datos desde el ESP32
+app.post('/updatetemperature', async (req, res) => {
+    const { DatoDB } = req.body;
 
-            // Agregar parámetros dinámicamente si están presentes
-            if (volumen !== undefined && volumen !== null) {
-                console.log(`Recibido volumen: ${volumen}`);
-                query += "Litros_Llenado = @Volumen, ";
-                params.push({ name: 'Volumen', value: volumen, type: sql.Float });
-            }
-
-            if (temperaturaHervidoReal !== undefined && temperaturaHervidoReal !== null) {
-                console.log(`Recibido temperaturaHervidoReal: ${temperaturaHervidoReal}`);
-                query += "Temp_Hervido_Real = @TemperaturaHervido, ";
-                params.push({ name: 'TemperaturaHervido', value: temperaturaHervidoReal, type: sql.Float });
-            }
-
-            if (temperaturaMaceradoReal !== undefined && temperaturaMaceradoReal !== null) {
-                console.log(`Recibido temperaturaMaceradoReal: ${temperaturaMaceradoReal}`);
-                query += "Temp_Macerado_Real = @TemperaturaMacerado, ";
-                params.push({ name: 'TemperaturaMacerado', value: temperaturaMaceradoReal, type: sql.Float });
-            }
-
-            if (tiempoMaceradoTranscurrido !== '00:00:00' && tiempoMaceradoTranscurrido !== null) {
-                console.log(`Recibido tiempoMaceradoTranscurrido: ${tiempoMaceradoTranscurrido}`);
-                query += "Tiempo_Macerado_Transcurrido = @TiempoMacerado, ";
-                params.push({ name: 'TiempoMacerado', value: tiempoMaceradoTranscurrido, type: sql.VarChar });
-            }
-
-            if (tiempoClarificadoTranscurrido !== '00:00:00' && tiempoClarificadoTranscurrido !== null) {
-                console.log(`Recibido tiempoClarificadoTranscurrido: ${tiempoClarificadoTranscurrido}`);
-                query += "Tiempo_Recirculado_Transcurrido = @TiempoClarificado, ";
-                params.push({ name: 'TiempoClarificado', value: tiempoClarificadoTranscurrido, type: sql.VarChar });
-            }
-
-            // Eliminar la última coma y agregar la condición WHERE
-            query = query.slice(0, -2) + " WHERE Nombre_De_Receta = @NombreReceta";
-            params.push({ name: 'NombreReceta', value: NombreReceta, type: sql.VarChar });
-
-            // Preparar la consulta
-            const request = pool.request();
-            params.forEach(param => {
-                request.input(param.name, param.type, param.value);
-            });
-
-            // Ejecutar la consulta
-            const result = await request.query(query);
-
-            // Verificar si se actualizó alguna fila
-            if (result.rowsAffected[0] > 0) {
-                res.status(200).json({ message: 'Receta actualizada con éxito' });
-            } else {
-                res.status(404).json({ message: 'No se encontró la receta especificada' });
-            }
-        }
-    } catch (error) {
-        console.error('Error al actualizar la receta:', error);
-        res.status(500).send('Error al actualizar la receta');
+    if (DatoDB === undefined) {
+        return res.status(400).send('DatoDB no proporcionado en la solicitud');
     }
-});
 
-// Middleware para registrar solicitudes
-app.use((req, res, next) => {
-    console.log(`Recibiendo solicitud para: ${req.url}`);
-    next();
-});
-
-// Iniciar el servidor en el puerto 3000
-const PORT = process.env.PORT || 10000;
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`API corriendo en el puerto ${PORT}`);
-});
-
-/*
-app.post('/Litros', async (req, res) => {
-    const { volumen, nombreReceta } = req.body;  // Obtener el volumen y el nombre de la receta del cuerpo de la solicitud
-    
-    // Agregar un log para ver si la API recibe los datos correctamente
-    console.log(`Volumen recibido: ${volumen}, NombreReceta recibido: ${nombreReceta}`);
-    
     try {
         const pool = await conectarDB();  // Conectar a la base de datos
-        
         if (pool) {
-            // Actualiza el volumen para la receta especificada
             const result = await pool.request()
-                .input('Volumen', sql.Float, volumen)
-                .input('NombreReceta', sql.VarChar, nombreReceta)
-                .query("UPDATE Recetas SET Litros_Llenado = @Volumen WHERE Nombre_De_Receta = @NombreReceta");
-
-            // Verificar si se actualizó alguna fila
-            if (result.rowsAffected[0] > 0) {
-                res.status(200).json({ message: 'Volumen actualizado con éxito' });
-            } else {
-                res.status(404).json({ message: 'No se encontró la receta especificada' });
-            }
+                .input('TemperaturaMacerado', sql.Numeric, DatoDB)
+                .query("UPDATE Recetas SET Temp_Macerado_Real = @TemperaturaMacerado WHERE Nombre_De_Receta = 'IPA'");
+            
+            console.log('Dato actualizado correctamente en la base de datos');
+            res.status(200).send('Dato actualizado correctamente');
         }
     } catch (error) {
-        console.error('Error al actualizar el volumen:', error);
-        res.status(500).send('Error al actualizar el volumen');
+        console.error('Error al actualizar en la base de datos:', error);
+        res.status(500).send('Error al actualizar en la base de datos');
     }
 });
-*/
 
-/*
-    try {
-        const pool = await conectarDB();  // Conectar a la base de datos
-        
-        if (pool) {
-            let query = "UPDATE Recetas SET ";
-            let params = [];
-            
-            if (Volumen_Cargado !== undefined) {
-                query += "Litros_Llenado = @Volumen, ";
-                params.push({ name: 'Volumen', value: Volumen_Cargado, type: sql.Float });
-            }
-           
-            
-            if (Temperatura_HervidoReal !== undefined) {
-                query += "Temp_Hervido_Real = @TemperaturaHervido, ";
-                params.push({ name: 'TemperaturaHervido', value: Temperatura_HervidoReal, type: sql.Float });
-            }
+// Iniciar el servidor en el puerto 3001
+const PORT = process.env.PORT || 3001;
+app.listen(3001, '0.0.0.0', () => {
+    console.log('API corriendo en el puerto 3001');
+});
 
-            if (Temperatura_MaceradoReal !== undefined) {
-                query += "Temp_Macerado_Real = @TemperaturaMacerado, ";
-                params.push({ name: 'TemperaturaMacerado', value: Temperatura_MaceradoReal, type: sql.Float });
-            }
-            
-            if (Tiempo_Clarificado !== undefined) {
-                query += "Tiempo_Recirculado_Transcurrido = @TiempoClarificado, ";
-                params.push({ name: 'TiempoClarificado', value: Tiempo_Clarificado, type: sql.Int });
-            }
 
-            if (Tiempo_Macerado !== undefined) {
-                query += "Tiempo_Macerado_Transcurrido = @TiempoMacerado, ";
-                params.push({ name: 'TiempoMacerado', value: Tiempo_Macerado, type: sql.Int });
-            }
-            
 
-            // Eliminar la última coma y añadir la condición WHERE
-            query = query.slice(0, -2) + " WHERE Nombre_De_Receta = @NombreReceta";
 
-            // Preparar la consulta
-            const request = pool.request()
-                .input('NombreReceta', sql.VarChar, Nombre_Receta);
-
-            // Agregar los parámetros a la consulta
-            params.forEach(param => {
-                request.input(param.name, param.type, param.value);
-            });
-
-            // Ejecutar la consulta
-            const result = await request.query(query);
-
-            if (result.rowsAffected[0] > 0) {
-                res.status(200).json({ message: 'Receta actualizada con éxito' });
-            } else {
-                res.status(404).json({ message: 'No se encontró la receta especificada' });
-            }
-        }
-    } catch (error) {
-        console.error('Error al actualizar la receta:', error);
-        res.status(500).send('Error al actualizar la receta');
-    }
-    */
