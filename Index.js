@@ -142,19 +142,16 @@ app.post('/ActualizarReceta', async (req, res) => {
                 params.push({ name: 'TiempoClarificado', value: tiempoClarificadoTranscurrido, type: sql.VarChar });
             }
 
-            // Agregar parámetros dinámicamente si están presentes
-            if ( E_Hervido !== undefined && E_Hervido !== null) {
+            if (E_Hervido !== undefined && E_Hervido !== null) {
                 console.log(`Estado hervido: ${E_Hervido}`);
                 query += "Estado_Hervido = @E_Hervido, ";
-                params.push({ name: 'E_Hervido', value: E_Hervido, type: sql.bool });
+                params.push({ name: 'E_Hervido', value: E_Hervido, type: sql.Bit });
             }
 
-            // Agregar parámetros dinámicamente si están presentes
             if (E_Macerado !== undefined && E_Macerado !== null) {
                 console.log(`Recibido E_Macerado: ${E_Macerado}`);
-                query += "Litros_Llenado = @E_Macerado, ";
-                params.push({ name: 'E_Macerado', value: E_Macerado, type: sql.bool });
-            }
+                query += "Estado_Macerado = @E_Macerado, ";
+                params.push({ name: 'E_Macerado', value: E_Macerado, type: sql.Bit });
 
             // Eliminar la última coma y agregar la condición WHERE
             query = query.slice(0, -2) + " WHERE Nombre_De_Receta = @NombreReceta";
