@@ -61,8 +61,6 @@ app.get('/RecetaSeleccionada', async (req, res) => {
                 //Tiempos
                 const TiempoMacerado = moment(receta.Tiempo_de_macerado).format('HH:mm:ss');
                 const TiempoClarificado = moment(receta.Tiempo_de_clarificado).format('HH:mm:ss');
-                //const TiempoMacerado = receta.Tiempo_de_macerado;  
-                //const TiempoClarificado = receta.Tiempo_de_clarificado; 
                 
                 //Otras variables
                 const CantLitros = receta.Litros;
@@ -104,7 +102,7 @@ app.get('/RecetaSeleccionada', async (req, res) => {
 });
 
 app.post('/ActualizarReceta', async (req, res) => {
-    const { NombreReceta, volumen, temperaturaHervidoReal, temperaturaMaceradoReal, tiempoMaceradoTranscurrido, tiempoClarificadoTranscurrido } = req.body;
+    const { NombreReceta, volumen, temperaturaHervidoReal, temperaturaMaceradoReal, tiempoMaceradoTranscurrido, tiempoClarificadoTranscurrido,E_Hervido, E_Macerado } = req.body;
 
     try {
         const pool = await conectarDB();  // Conectar a la base de datos
@@ -142,6 +140,20 @@ app.post('/ActualizarReceta', async (req, res) => {
                 console.log(`Recibido tiempoClarificadoTranscurrido: ${tiempoClarificadoTranscurrido}`);
                 query += "Tiempo_Recirculado_Transcurrido = @TiempoClarificado, ";
                 params.push({ name: 'TiempoClarificado', value: tiempoClarificadoTranscurrido, type: sql.VarChar });
+            }
+
+            // Agregar parámetros dinámicamente si están presentes
+            if ( E_Hervido !== undefined && E_Hervido !== null) {
+                console.log(`Estado hervido: ${E_Hervido}`);
+                query += "Estado_Hervido = @E_Hervido, ";
+                params.push({ name: 'E_Hervido', value: E_Hervido, type: sql.bool });
+            }
+
+            // Agregar parámetros dinámicamente si están presentes
+            if (E_Macerado !== undefined && E_Macerado !== null) {
+                console.log(`Recibido E_Macerado: ${E_Macerado}`);
+                query += "Litros_Llenado = @E_Macerado, ";
+                params.push({ name: 'E_Macerado', value: E_Macerado, type: sql.bool });
             }
 
             // Eliminar la última coma y agregar la condición WHERE
