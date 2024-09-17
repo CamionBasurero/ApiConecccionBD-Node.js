@@ -102,7 +102,7 @@ app.get('/RecetaSeleccionada', async (req, res) => {
 });
 
 app.post('/ActualizarReceta', async (req, res) => {
-    const { NombreReceta, volumen, temperaturaHervidoReal, temperaturaMaceradoReal, tiempoMaceradoTranscurrido, tiempoClarificadoTranscurrido,E_Hervido = false, E_Macerado = false } = req.body;
+    const { NombreReceta, volumen, temperaturaHervidoReal, temperaturaMaceradoReal, tiempoMaceradoTranscurrido, tiempoClarificadoTranscurrido,E_Hervido = null, E_Macerado=null } = req.body;
 
     try {
         const pool = await conectarDB();  // Conectar a la base de datos
@@ -148,7 +148,7 @@ app.post('/ActualizarReceta', async (req, res) => {
                 params.push({ name: 'E_Hervido', value: E_Hervido ? 1 : 0, type: sql.Bit });  // Convertir bool a bit
             }
 
-            if (E_Macerado !== undefined ) {
+            if (E_Macerado !== undefined && E_Macerado ) {
                 console.log(`Recibido E_Macerado: ${E_Macerado}`);
                 query += "Estado_Macerado = @E_Macerado, ";
                 params.push({ name: 'E_Macerado', value: E_Macerado ? 1 : 0, type: sql.Bit });
