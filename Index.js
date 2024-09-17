@@ -102,7 +102,7 @@ app.get('/RecetaSeleccionada', async (req, res) => {
 });
 
 app.post('/ActualizarReceta', async (req, res) => {
-    const { NombreReceta, volumen, temperaturaHervidoReal, temperaturaMaceradoReal, tiempoMaceradoTranscurrido, tiempoClarificadoTranscurrido,E_Hervido, E_Macerado } = req.body;
+    const { NombreReceta, volumen, temperaturaHervidoReal, temperaturaMaceradoReal, tiempoMaceradoTranscurrido, tiempoClarificadoTranscurrido,E_Hervido = false, E_Macerado = false } = req.body;
 
     try {
         const pool = await conectarDB();  // Conectar a la base de datos
@@ -153,6 +153,7 @@ app.post('/ActualizarReceta', async (req, res) => {
                 query += "Estado_Macerado = @E_Macerado, ";
                 params.push({ name: 'E_Macerado', value: E_Macerado ? 1 : 0, type: sql.Bit });
             }
+
             // Eliminar la última coma y agregar la condición WHERE
             query = query.slice(0, -2) + " WHERE Nombre_De_Receta = @NombreReceta";
             params.push({ name: 'NombreReceta', value: NombreReceta, type: sql.VarChar });
@@ -191,95 +192,3 @@ app.listen(PORT, '0.0.0.0', () => {
     console.log(`API corriendo en el puerto ${PORT}`);
 });
 
-/*
-app.post('/Litros', async (req, res) => {
-    const { volumen, nombreReceta } = req.body;  // Obtener el volumen y el nombre de la receta del cuerpo de la solicitud
-    
-    // Agregar un log para ver si la API recibe los datos correctamente
-    console.log(`Volumen recibido: ${volumen}, NombreReceta recibido: ${nombreReceta}`);
-    
-    try {
-        const pool = await conectarDB();  // Conectar a la base de datos
-        
-        if (pool) {
-            // Actualiza el volumen para la receta especificada
-            const result = await pool.request()
-                .input('Volumen', sql.Float, volumen)
-                .input('NombreReceta', sql.VarChar, nombreReceta)
-                .query("UPDATE Recetas SET Litros_Llenado = @Volumen WHERE Nombre_De_Receta = @NombreReceta");
-
-            // Verificar si se actualizó alguna fila
-            if (result.rowsAffected[0] > 0) {
-                res.status(200).json({ message: 'Volumen actualizado con éxito' });
-            } else {
-                res.status(404).json({ message: 'No se encontró la receta especificada' });
-            }
-        }
-    } catch (error) {
-        console.error('Error al actualizar el volumen:', error);
-        res.status(500).send('Error al actualizar el volumen');
-    }
-});
-*/
-
-/*
-    try {
-        const pool = await conectarDB();  // Conectar a la base de datos
-        
-        if (pool) {
-            let query = "UPDATE Recetas SET ";
-            let params = [];
-            
-            if (Volumen_Cargado !== undefined) {
-                query += "Litros_Llenado = @Volumen, ";
-                params.push({ name: 'Volumen', value: Volumen_Cargado, type: sql.Float });
-            }
-           
-            
-            if (Temperatura_HervidoReal !== undefined) {
-                query += "Temp_Hervido_Real = @TemperaturaHervido, ";
-                params.push({ name: 'TemperaturaHervido', value: Temperatura_HervidoReal, type: sql.Float });
-            }
-
-            if (Temperatura_MaceradoReal !== undefined) {
-                query += "Temp_Macerado_Real = @TemperaturaMacerado, ";
-                params.push({ name: 'TemperaturaMacerado', value: Temperatura_MaceradoReal, type: sql.Float });
-            }
-            
-            if (Tiempo_Clarificado !== undefined) {
-                query += "Tiempo_Recirculado_Transcurrido = @TiempoClarificado, ";
-                params.push({ name: 'TiempoClarificado', value: Tiempo_Clarificado, type: sql.Int });
-            }
-
-            if (Tiempo_Macerado !== undefined) {
-                query += "Tiempo_Macerado_Transcurrido = @TiempoMacerado, ";
-                params.push({ name: 'TiempoMacerado', value: Tiempo_Macerado, type: sql.Int });
-            }
-            
-
-            // Eliminar la última coma y añadir la condición WHERE
-            query = query.slice(0, -2) + " WHERE Nombre_De_Receta = @NombreReceta";
-
-            // Preparar la consulta
-            const request = pool.request()
-                .input('NombreReceta', sql.VarChar, Nombre_Receta);
-
-            // Agregar los parámetros a la consulta
-            params.forEach(param => {
-                request.input(param.name, param.type, param.value);
-            });
-
-            // Ejecutar la consulta
-            const result = await request.query(query);
-
-            if (result.rowsAffected[0] > 0) {
-                res.status(200).json({ message: 'Receta actualizada con éxito' });
-            } else {
-                res.status(404).json({ message: 'No se encontró la receta especificada' });
-            }
-        }
-    } catch (error) {
-        console.error('Error al actualizar la receta:', error);
-        res.status(500).send('Error al actualizar la receta');
-    }
-    */
