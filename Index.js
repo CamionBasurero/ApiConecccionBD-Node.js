@@ -102,7 +102,7 @@ app.get('/RecetaSeleccionada', async (req, res) => {
 });
 
 app.post('/ActualizarReceta', async (req, res) => {
-    const { NombreReceta, volumen, temperaturaHervidoReal, temperaturaMaceradoReal, tiempoMaceradoTranscurrido, tiempoClarificadoTranscurrido,E_Hornalla = null, E_R_Calefaccion = null,E_Hervido = null, E_Macerado=null } = req.body;
+    const { NombreReceta, volumen, temperaturaHervidoReal, temperaturaMaceradoReal, tiempoMaceradoTranscurrido, tiempoClarificadoTranscurrido,E_Hornalla = null, E_R_Calefaccion = null,E_Hervido = null, E_Macerado=null,Receta_Seleccionada=null } = req.body;
 
     try {
         const pool = await conectarDB();  // Conectar a la base de datos
@@ -113,57 +113,63 @@ app.post('/ActualizarReceta', async (req, res) => {
 
             // Agregar parámetros dinámicamente si están presentes
             if (volumen !== undefined && volumen !== null) {
-                console.log(`Recibido volumen: ${volumen}`);
+                //console.log(`Recibido volumen: ${volumen}`);
                 query += "Litros_Llenado = @Volumen, ";
                 params.push({ name: 'Volumen', value: volumen, type: sql.Float });
             }
 
             if (temperaturaHervidoReal !== undefined && temperaturaHervidoReal !== null) {
-                console.log(`Recibido temperaturaHervidoReal: ${temperaturaHervidoReal}`);
+                //console.log(`Recibido temperaturaHervidoReal: ${temperaturaHervidoReal}`);
                 query += "Temp_Hervido_Real = @TemperaturaHervido, ";
                 params.push({ name: 'TemperaturaHervido', value: temperaturaHervidoReal, type: sql.Float });
             }
 
             if (temperaturaMaceradoReal !== undefined && temperaturaMaceradoReal !== null) {
-                console.log(`Recibido temperaturaMaceradoReal: ${temperaturaMaceradoReal}`);
+                //console.log(`Recibido temperaturaMaceradoReal: ${temperaturaMaceradoReal}`);
                 query += "Temp_Macerado_Real = @TemperaturaMacerado, ";
                 params.push({ name: 'TemperaturaMacerado', value: temperaturaMaceradoReal, type: sql.Float });
             }
 
-            if (tiempoMaceradoTranscurrido !== '00:00:00' && tiempoMaceradoTranscurrido !== null) {
-                console.log(`Recibido tiempoMaceradoTranscurrido: ${tiempoMaceradoTranscurrido}`);
+            if ( tiempoMaceradoTranscurrido !== null) {
+                //console.log(`Recibido tiempoMaceradoTranscurrido: ${tiempoMaceradoTranscurrido}`);
                 query += "Tiempo_Macerado_Transcurrido = @TiempoMacerado, ";
                 params.push({ name: 'TiempoMacerado', value: tiempoMaceradoTranscurrido, type: sql.VarChar });
             }
-
-            if (tiempoClarificadoTranscurrido !== '00:00:00' && tiempoClarificadoTranscurrido !== null) {
-                console.log(`Recibido tiempoClarificadoTranscurrido: ${tiempoClarificadoTranscurrido}`);
+            //tiempoClarificadoTranscurrido !== '00:00:00' &&
+            if ( tiempoClarificadoTranscurrido !== null) {
+                //console.log(`Recibido tiempoClarificadoTranscurrido: ${tiempoClarificadoTranscurrido}`);
                 query += "Tiempo_Recirculado_Transcurrido = @TiempoClarificado, ";
                 params.push({ name: 'TiempoClarificado', value: tiempoClarificadoTranscurrido, type: sql.VarChar });
             }
             
             if (E_Hornalla !== undefined && E_Hornalla !== null) {
-                console.log(`Estado hervido: ${E_Hornalla}`);
+                //console.log(`Estado hervido: ${E_Hornalla}`);
                 query += "Estado_Calefaccion_Hervido = @E_Hornalla, ";
                 params.push({ name: 'E_Hornalla', value: E_Hornalla ? 1 : 0, type: sql.Bit });  // Convertir bool a bit
             }
 
-            if (E_R_Calefaccion !== undefined && E_R_Calefaccion ) {
-                console.log(`Recibido E_R_Calefaccion: ${E_R_Calefaccion}`);
+            if (E_R_Calefaccion !== undefined && E_R_Calefaccion !==null ) {
+                //console.log(`Recibido E_R_Calefaccion: ${E_R_Calefaccion}`);
                 query += "Estado_Calefaccion_Macerado = @E_R_Calefaccion, ";
                 params.push({ name: 'E_R_Calefaccion', value: E_R_Calefaccion ? 1 : 0, type: sql.Bit });
             }
 
             if (E_Hervido !== undefined && E_Hervido !== null) {
-                console.log(`Estado hervido: ${E_Hervido}`);
+                //c/onsole.log(`Estado hervido: ${E_Hervido}`);
                 query += "Estado_Hervido = @E_Hervido, ";
                 params.push({ name: 'E_Hervido', value: E_Hervido ? 1 : 0, type: sql.Bit });  // Convertir bool a bit
             }
 
-            if (E_Macerado !== undefined && E_Macerado ) {
-                console.log(`Recibido E_Macerado: ${E_Macerado}`);
+            if (E_Macerado !== undefined && E_Macerado!==null ) {
+                //console.log(`Recibido E_Macerado: ${E_Macerado}`);
                 query += "Estado_Macerado = @E_Macerado, ";
                 params.push({ name: 'E_Macerado', value: E_Macerado ? 1 : 0, type: sql.Bit });
+            }
+
+            if (Receta_Seleccionada !== undefined && Receta_Seleccionada!==null ) {
+                //console.log(`Recibido E_Macerado: ${Receta_Seleccionada}`);
+                query += "Receta_Seleccionada = @Receta_Seleccionada, ";
+                params.push({ name: 'Receta_Seleccionada', value: Receta_Seleccionada ? 1 : 0, type: sql.Bit });
             }
 
             // Eliminar la última coma y agregar la condición WHERE
@@ -179,12 +185,6 @@ app.post('/ActualizarReceta', async (req, res) => {
             // Ejecutar la consulta
             const result = await request.query(query);
 
-            // Verificar si se actualizó alguna fila
-            if (result.rowsAffected[0] > 0) {
-                res.status(200).json({ message: 'Receta actualizada con éxito' });
-            } else {
-                res.status(404).json({ message: 'No se encontró la receta especificada' });
-            }
         }
     } catch (error) {
         console.error('Error al actualizar la receta:', error);
