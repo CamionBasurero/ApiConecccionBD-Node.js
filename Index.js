@@ -96,7 +96,7 @@ app.get('/RecetaSeleccionada', async (req, res) => {
 });
 
 app.post('/ActualizarReceta', async (req, res) => {
-    const { NombreReceta, volumen, temperaturaHervidoReal, temperaturaMaceradoReal, tiempoMaceradoTranscurrido, tiempoClarificadoTranscurrido,E_Hornalla = null, E_R_Calefaccion = null,E_Hervido = null, E_Macerado=null,Receta_Seleccionada=null } = req.body;
+    const { NombreReceta, volumen, temperaturaHervidoReal, temperaturaMaceradoReal, tiempoMaceradoTranscurrido, tiempoClarificadoTranscurrido,E_Hornalla = null, E_R_Calefaccion = null,E_Hervido = null, E_Macerado=null} = req.body;
 
     try {
         const pool = await conectarDB();  // Conectar a la base de datos
@@ -159,13 +159,13 @@ app.post('/ActualizarReceta', async (req, res) => {
                 query += "Estado_Macerado = @E_Macerado, ";
                 params.push({ name: 'E_Macerado', value: E_Macerado ? 1 : 0, type: sql.Bit });
             }
-
+            /*
             if (Receta_Seleccionada !== undefined && Receta_Seleccionada!==null ) {
                 //console.log(`Recibido E_Macerado: ${Receta_Seleccionada}`);
                 query += "Receta_Seleccionada = @Receta_Seleccionada, ";
                 params.push({ name: 'Receta_Seleccionada', value: Receta_Seleccionada ? 1 : 0, type: sql.Bit });
             }
-
+            */
             // Eliminar la última coma y agregar la condición WHERE
             query = query.slice(0, -2) + " WHERE Nombre_De_Receta = @NombreReceta";
             params.push({ name: 'NombreReceta', value: NombreReceta, type: sql.VarChar });
