@@ -67,12 +67,6 @@ app.get('/RecetaSeleccionada', async (req, res) => {
                 const EstadoHervido = receta.Estado_Hervido;
                 const EstadoMacerado = receta.Estado_Macerado;
 
-                console.log(`Receta seleccionada: ${Nombre_Receta}`);
-                console.log(`Ingredientes: ${TipoDeMalta,CantidadMalta}`);
-                console.log(`Temperaturas: ${TemperaturaHervido,TemperaturaMacerado}`);
-                console.log(`Tiempos: ${TiempoMacerado,TiempoClarificado}`);
-                console.log(`Otras variables: ${CantLitros,EstadoHervido,EstadoMacerado}`);
-                
                 // Devolver el estado, nombre de la receta, ingredientes, temperaturas, tiempos y litros en la respuesta
                 res.status(200).json({
                     Receta_Seleccionada,
@@ -165,13 +159,13 @@ app.post('/ActualizarReceta', async (req, res) => {
                 query += "Estado_Macerado = @E_Macerado, ";
                 params.push({ name: 'E_Macerado', value: E_Macerado ? 1 : 0, type: sql.Bit });
             }
-/*
+
             if (Receta_Seleccionada !== undefined && Receta_Seleccionada!==null ) {
                 //console.log(`Recibido E_Macerado: ${Receta_Seleccionada}`);
                 query += "Receta_Seleccionada = @Receta_Seleccionada, ";
                 params.push({ name: 'Receta_Seleccionada', value: Receta_Seleccionada ? 1 : 0, type: sql.Bit });
             }
-*/
+
             // Eliminar la última coma y agregar la condición WHERE
             query = query.slice(0, -2) + " WHERE Nombre_De_Receta = @NombreReceta";
             params.push({ name: 'NombreReceta', value: NombreReceta, type: sql.VarChar });
