@@ -1,20 +1,23 @@
 
+// Importaciones necesarias
 import express from 'express';
-import { json } from 'body-parser';
 import cors from 'cors';
-import { connect, Float, VarChar, Bit } from 'mssql';
+import { connect, Float, VarChar, Bit } from 'mssql';  // Para SQL Server
 import moment from 'moment';
 
+// Crear una instancia de Express
 const app = express();
-app.use(json());
+
+// Middleware para manejar JSON y habilitar CORS
+app.use(express.json());
 app.use(cors());
 
 // Configuración de la base de datos
 const DBConfig = {
-    user:'juanpi123_SQLLogin_1',
-    password:'b9x48xw44a',
-    server:'DB_PlantaDC.mssql.somee.com', 
-    database:'DB_PlantaDC',
+    user: process.env.DB_USER || 'juanpi123_SQLLogin_1',
+    password: process.env.DB_PASSWORD || 'b9x48xw44a',
+    server: process.env.DB_SERVER || 'DB_PlantaDC.mssql.somee.com', 
+    database: process.env.DB_DATABASE || 'DB_PlantaDC',
     options: {
         encrypt: true,
         enableArithAbort: true,
