@@ -1,9 +1,9 @@
 
-// Importaciones necesarias
-import express from 'express';
-import cors from 'cors';
-import { connect, Float, VarChar, Bit } from 'mssql';  // Para SQL Server
-import moment from 'moment';
+// Usar require en lugar de import
+const express = require('express');
+const cors = require('cors');
+const { connect, Float, VarChar, Bit } = require('mssql');
+const moment = require('moment');
 
 // Crear una instancia de Express
 const app = express();
